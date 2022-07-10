@@ -1,0 +1,31 @@
+{
+    "manifest_version": 2, 
+    "name": "Taggem",
+    "version": "0.1.0",
+    "description": "Add a list of tags directly to the URL of websites that query tags inside the link ",
+    "icons": {
+        "128": "assets/global-icon128.png",
+        "48": "assets/global-icon48.png",
+        "16": "assets/global-icon16.png"
+    },
+    "web_accessible_resources": [
+        "assets/global-icon48.png"
+    ],
+    "browser_action": {
+        "default_icon": "assets/global-icon16.png",
+        "default_popup": "popup.html"
+    },
+    "options_ui": {
+        "page": "options.html"
+    },
+    "background": {
+        "scripts": [        
+            "scripts/tabListener.js"   
+        ],
+        "persistent": false
+    },
+    "permissions": [
+        "activeTab",
+        "storage"
+    ]
+}
