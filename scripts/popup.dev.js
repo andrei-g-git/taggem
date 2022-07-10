@@ -5,35 +5,50 @@ document.addEventListener('DOMContentLoaded', init);
 function init() {
   var form = document.getElementById("all-tags-input-form");
   listenForTagInput(form, storeDataToStorage, chrome);
-  listenForURLJnject(document.getElementById("url-inject-button"), chrome, getDataFromStorage, "ALL_TAGS");
+  listenForURLJnject(document.getElementById("url-inject-button"), chrome, "ALL_TAGS", "DEMARCATOR", "NEW_DEMARCATOR");
 }
 
 function listenForTagInput(form, storeDataToStorage, browser) {
   if (form) {
     form.addEventListener("submit", function (event) {
       event.preventDefault();
-      console.log("input value:  " + this.elements["text-field"].value);
-      var tagString = this.elements["text-field"].value;
+      console.log("input value:  " + this.elements["tags-field"].value);
+      var tagString = this.elements["tags-field"].value;
+      var demarcator = this.elements["demarcator-field"].value;
+      var newDemarcator = this.elements["new-demarcator-field"].value;
       storeDataToStorage(browser, {
-        ALL_TAGS: tagString
+        ALL_TAGS: tagString,
+        DEMARCATOR: demarcator,
+        NEW_DEMARCATOR: newDemarcator
       });
     });
   }
 }
 
-function listenForURLJnject(button, browser, getDataFromStorage, tagsStorageKey) {
+function listenForURLJnject(button, browser, tagsStorageKey, demarcatorKey, newDemarcatorKey) {
   if (button) {
     button.addEventListener("click", function () {
-      getDataFromStorage(browser, tagsStorageKey).then(function (data) {
+      browser.storage.local.get([tagsStorageKey, demarcatorKey, newDemarcatorKey], function (data) {
+        console.log(JSON.stringify(data));
         var tagString = data[tagsStorageKey];
+        var demarcator = data[demarcatorKey];
+        var newDemarcator = data[newDemarcatorKey];
         browser.tabs.query({
           active: true,
           currentWindow: true
         }, function (tabResults) {
           var activeTab = tabResults[0];
-          browser.tabs.update({
-            url: activeTab.url + tagString
-          });
+          var currentUrl = activeTab.url;
+          console.log("demarcator:    " + demarcator + "   and the key:    " + demarcatorKey + "  and the tags: " + tagString + "   new demarcator" + newDemarcator);
+
+          if (currentUrl.includes(demarcator)) {
+            var urlWithTags = currentUrl.replace(demarcator, (newDemarcator ? newDemarcator : demarcator) + tagString);
+            browser.tabs.update({
+              url: urlWithTags
+            });
+          } else {
+            console.log("no demarcator match, should be: " + demarcator);
+          }
         });
       });
     });
