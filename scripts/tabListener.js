@@ -2,7 +2,8 @@
     
 //     if(tab.active && tab.highlighted){
 //         console.log(`tab ${tabId} has updated`);
-//         chrome.tabs.update({url: "https://wikipedia.org"}) //deathloop --- obviously this won't work
+//         //chrome.tabs.update({url: "https://wikipedia.org"}) //deathloop --- obviously this won't work
+//         chrome.runtime.sendMessage({message: tab.url})
 //     }
 // });
 

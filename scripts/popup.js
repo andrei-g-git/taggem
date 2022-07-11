@@ -1,34 +1,84 @@
 document.addEventListener( 'DOMContentLoaded', init );
 
 function init(){
+
+    getDataFromStorage(browser, "WEBSITES")
+        .then(data => {
+            if(! data["WEBSITES"]) storeDataToStorage(browser, {WEBSITES: {}});
+        })
+
     const form = document.getElementById("all-tags-input-form");
     listenForTagInput(
         form, 
         storeDataToStorage, 
-        chrome
+        getDataFromStorage,
+        chrome,
+        getCurrentDomain
     );
 
-    listenForURLJnject(
+    // listenForURLJnject(
+    //     document.getElementById("url-inject-button"), 
+    //     chrome, 
+    //     "ALL_TAGS",
+    //     "DEMARCATOR",
+    //     "NEW_DEMARCATOR"
+    // );
+    attatchTagsToURL(
         document.getElementById("url-inject-button"), 
         chrome, 
-        "ALL_TAGS",
+        "WEBSITES",
+        "TAGS",
         "DEMARCATOR",
-        "NEW_DEMARCATOR"
-    );
+        "NEW_DEMARCATOR",  
+        getCurrentUrlAndDomain
+    )
 }
 
-function listenForTagInput(form, storeDataToStorage, browser){
+function listenForTagInput(form, storeDataToStorage, getDataFromStorage, browser, getCurrentDomain){
     if(form){
         form.addEventListener("submit", function(event){
             event.preventDefault();
-            console.log("input value:  " + this.elements["tags-field"].value);
             const tagString = this.elements["tags-field"].value;
             const demarcator = this.elements["demarcator-field"].value;
             const newDemarcator = this.elements["new-demarcator-field"].value;
-            storeDataToStorage(browser, {ALL_TAGS: tagString, DEMARCATOR: demarcator, NEW_DEMARCATOR: newDemarcator});
+            //storeDataToStorage(browser, {ALL_TAGS: tagString, DEMARCATOR: demarcator, NEW_DEMARCATOR: newDemarcator});
+            getDataFromStorage(browser, "WEBSITES")
+                .then(data => {
+                    let websiteTags = data["WEBSITES"];
+                    getCurrentDomain(browser)
+                        .then(domain => {
+                            websiteTags[domain] = {TAGS: tagString, DEMARCATOR: demarcator, NEW_DEMARCATOR: newDemarcator}
+                            storeDataToStorage(browser, {
+                                WEBSITES: websiteTags
+                            });
+                        })
+                })
+
         });        
     }
 
+}
+
+function getCurrentDomain(browser){
+    return new Promise(resolve => {
+        browser.tabs.query({active: true, currentWindow: true}, result => {
+            const activeTab = result[0];
+            const url = new URL(activeTab.url);
+            const domain = url.hostname;
+            resolve(domain);
+        });
+    });
+}
+
+function getCurrentUrlAndDomain(browser){
+    return new Promise(resolve => {
+        browser.tabs.query({active: true, currentWindow: true}, result => {
+            const activeTab = result[0];
+            const url = new URL(activeTab.url);
+            const domain = url.hostname;
+            resolve({url: url.href, domain: domain});
+        });
+    });
 }
 
 function listenForURLJnject(button, browser, tagsStorageKey, demarcatorKey, newDemarcatorKey){
@@ -54,6 +104,42 @@ function listenForURLJnject(button, browser, tagsStorageKey, demarcatorKey, newD
 
             })
         });
+    }
+}
+
+function attatchTagsToURL(
+    button, 
+    browser, 
+    mainKey,
+    tagsKey,
+    demarcatorKey,
+    newDemarcatorKey,    
+    getCurrentUrlAndDomain
+){
+    if(button){
+        button.addEventListener("click", function(){
+            getCurrentUrlAndDomain(browser)
+                .then(urlObject => {
+                    browser.storage.local.get(mainKey, function(data){
+                        const webistes = data[mainKey];
+                        const domain = urlObject.domain; //this is very coupled, using different fucntions to get the url and the domain separately is unweildy but better practice
+                        const currentWebsiteData = webistes[domain];
+                        const tagString = currentWebsiteData[tagsKey];
+                        const demarcator = currentWebsiteData[demarcatorKey]; 
+                        const newDemarcator = currentWebsiteData[newDemarcatorKey];
+                        const currentUrl = urlObject.url;
+                        console.log("main data etc:    " + JSON.stringify(webistes) + "   " + domain + "   " + currentUrl + "    " + demarcator)
+                        if(currentUrl.includes(demarcator)){
+                            let urlWithTags = currentUrl.replace(demarcator, (newDemarcator? newDemarcator : demarcator) + tagString);
+                            console.log("FINAL URL:   " + urlWithTags)
+                            browser.tabs.update({url: urlWithTags})
+                        } else {
+                            console.log("no demarcator match, should be: " + demarcator);
+                        }
+                    });
+                })
+        });
+
     }
 }
 
