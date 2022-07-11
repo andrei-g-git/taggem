@@ -5,19 +5,45 @@ document.addEventListener('DOMContentLoaded', init);
 function init() {
   getDataFromStorage(browser, "WEBSITES").then(function (data) {
     if (!data["WEBSITES"]) storeDataToStorage(browser, {
-      WEBSITES: {}
+      WEBSITES: {
+        "en.wikipedia.org": {
+          "TAGS": ["abc", "def", "ghi"],
+          "DEMARCATOR": "Page",
+          "NEW_DEMARCATOR": "DIIIICK"
+        }
+      }
     });
   });
+  createAllTags(document.getElementById("tag-container"), chrome, makeTag, getCurrentDomain, "WEBSITES", "TAGS");
   var form = document.getElementById("all-tags-input-form");
-  listenForTagInput(form, storeDataToStorage, getDataFromStorage, chrome, getCurrentDomain); // listenForURLJnject(
-  //     document.getElementById("url-inject-button"), 
-  //     chrome, 
-  //     "ALL_TAGS",
-  //     "DEMARCATOR",
-  //     "NEW_DEMARCATOR"
-  // );
-
+  listenForTagInput(form, storeDataToStorage, getDataFromStorage, chrome, getCurrentDomain);
   attatchTagsToURL(document.getElementById("url-inject-button"), chrome, "WEBSITES", "TAGS", "DEMARCATOR", "NEW_DEMARCATOR", getCurrentUrlAndDomain);
+}
+
+function createAllTags(container, browser, makeTag, getCurrentDomain, mainKey, tagsKey) {
+  if (container) {
+    getCurrentDomain(browser).then(function (domain) {
+      browser.storage.local.get(mainKey, function (data) {
+        console.log("domain:  " + domain + "\n and data:   " + JSON.stringify(data[mainKey]));
+        var websites = data[mainKey];
+        var forCurrentWebsite = websites[domain];
+        var tags = forCurrentWebsite[tagsKey];
+        tags.forEach(function (tagString, index) {
+          var tagElement = makeTag(tagString, index);
+          container.appendChild(tagElement);
+        });
+      });
+    });
+  }
+}
+
+function makeTag(content, index) {
+  var tag = document.createElement("div");
+  tag.setAttribute("class", "tag");
+  tag.setAttribute("id", "tag-" + index);
+  tag.setAttribute("value", content);
+  tag.appendChild(document.createTextNode(content));
+  return tag;
 }
 
 function listenForTagInput(form, storeDataToStorage, getDataFromStorage, browser, getCurrentDomain) {

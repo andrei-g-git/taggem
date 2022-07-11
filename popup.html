@@ -11,10 +11,31 @@
         <!-- <script src="scripts/popup.js"></script> -->
     </head>
     <body>
-        <form class="all-tags-input-form"
+
+        <form class="tag-form"
+            id="tag-form"
+        >
+            <input class="tag-input"
+                id="tag-input"
+                type="text"
+                name="tag-field"
+                required
+            >
+            <input class="tag-submit"
+                id="tag-submit"
+                type="submit"
+            >
+        </form>
+
+        <div class="tag-container"
+            id="tag-container"
+        >
+        
+        </div>
+
+<!--         <form class="all-tags-input-form"
             id="all-tags-input-form"
         >
-            <!-- THESE SHOULD NOT BE REQUIRED, OTHERWISE IT"S POINTLESS IT I HAVE TO RETYPE THE TAGS EVERY TIME -->
             <input class="all-tags-input" 
                 type="text" 
                 name="tags-field"
@@ -30,7 +51,7 @@
                 name="new-demarcator-field"
             >
             <input class="tag-submit" type="submit">
-        </form>
+        </form> -->
 
         <button class="url-inject-button"
             id="url-inject-button"

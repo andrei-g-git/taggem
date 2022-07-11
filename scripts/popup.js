@@ -4,8 +4,27 @@ function init(){
 
     getDataFromStorage(browser, "WEBSITES")
         .then(data => {
-            if(! data["WEBSITES"]) storeDataToStorage(browser, {WEBSITES: {}});
+            if(! data["WEBSITES"]) storeDataToStorage(browser, {WEBSITES: {
+                "en.wikipedia.org": {
+                    "TAGS": [
+                        "abc",
+                        "def",
+                        "ghi"
+                    ],
+                    "DEMARCATOR": "Page",
+                    "NEW_DEMARCATOR": "DIIIICK"
+                }
+            }});
         })
+
+    createAllTags(
+        document.getElementById("tag-container"),
+        chrome,
+        makeTag,
+        getCurrentDomain,
+        "WEBSITES",
+        "TAGS"
+    );
 
     const form = document.getElementById("all-tags-input-form");
     listenForTagInput(
@@ -16,13 +35,6 @@ function init(){
         getCurrentDomain
     );
 
-    // listenForURLJnject(
-    //     document.getElementById("url-inject-button"), 
-    //     chrome, 
-    //     "ALL_TAGS",
-    //     "DEMARCATOR",
-    //     "NEW_DEMARCATOR"
-    // );
     attatchTagsToURL(
         document.getElementById("url-inject-button"), 
         chrome, 
@@ -32,6 +44,33 @@ function init(){
         "NEW_DEMARCATOR",  
         getCurrentUrlAndDomain
     )
+}
+
+function createAllTags(container, browser, makeTag, getCurrentDomain, mainKey, tagsKey){
+    if(container){
+        getCurrentDomain(browser)
+            .then(domain => {
+                browser.storage.local.get(mainKey, data => {
+                    console.log("domain:  " + domain + "\n and data:   " + JSON.stringify(data[mainKey]))
+                    const websites = data[mainKey];
+                    const forCurrentWebsite = websites[domain];
+                    const tags = forCurrentWebsite[tagsKey];
+                    tags.forEach((tagString, index) => {
+                        const tagElement = makeTag(tagString, index);
+                        container.appendChild(tagElement);
+                    });
+                })
+            })
+    }
+}
+
+function makeTag(content, index){
+    const tag = document.createElement("div");
+    tag.setAttribute("class", "tag");
+    tag.setAttribute("id", "tag-" + index);
+    tag.setAttribute("value", content);
+    tag.appendChild(document.createTextNode(content));
+    return tag;
 }
 
 function listenForTagInput(form, storeDataToStorage, getDataFromStorage, browser, getCurrentDomain){
