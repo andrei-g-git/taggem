@@ -26,6 +26,17 @@ function init(){
         "TAGS"
     );
 
+    addTag(
+        document.getElementById("tag-form"),
+        chrome,
+        appendToMainData, 
+        getCurrentDomain,
+        "WEBSITES",
+        "TAGS",
+        "DEMARCATOR",
+        "NEW_DEMARCATOR"      
+    );
+
     const form = document.getElementById("all-tags-input-form");
     listenForTagInput(
         form, 
@@ -51,7 +62,6 @@ function createAllTags(container, browser, makeTag, getCurrentDomain, mainKey, t
         getCurrentDomain(browser)
             .then(domain => {
                 browser.storage.local.get(mainKey, data => {
-                    console.log("domain:  " + domain + "\n and data:   " + JSON.stringify(data[mainKey]))
                     const websites = data[mainKey];
                     const forCurrentWebsite = websites[domain];
                     const tags = forCurrentWebsite[tagsKey];
@@ -71,6 +81,45 @@ function makeTag(content, index){
     tag.setAttribute("value", content);
     tag.appendChild(document.createTextNode(content));
     return tag;
+}
+
+function addTag(form, browser, appendToMainData, getCurrentDomain, mainKey, tagsKey, demarcatorKey, newDemarcatorKey){
+    if(form){
+        form.addEventListener("submit", function(event){
+            event.preventDefault();
+            const newTag = this.elements["tag-field"].value;
+            getCurrentDomain(browser)
+                .then(domain => {
+                    appendToMainData(browser, mainKey, tagsKey, demarcatorKey, newDemarcatorKey, newTag, domain)
+                        .then(mainData => {
+                            console.log("new main data before storage:  " + JSON.stringify(mainData))
+                            const dataObject = {};
+                            dataObject[mainKey] = mainData;
+                            browser.storage.local.set(dataObject);
+                        });
+                });
+
+        });
+    }
+}
+
+function appendToMainData(browser, mainKey, tagsKey, demarcatorKey, newDemarcatorKey, newTag, domain){
+    return new Promise(resolve => {
+        browser.storage.local.get(mainKey, function(data){
+            const websites = data[mainKey];
+            if(! websites[domain]){
+                websites[domain] = {};
+                const emptyDomainData = websites[domain];
+                emptyDomainData[tagsKey] = [];
+                emptyDomainData[demarcatorKey] = "";
+                emptyDomainData[newDemarcatorKey] = "";
+            }
+            const forThisWebsite = websites[domain];
+            forThisWebsite[tagsKey].push(newTag);
+            resolve(websites);
+        });
+    });
+
 }
 
 function listenForTagInput(form, storeDataToStorage, getDataFromStorage, browser, getCurrentDomain){
