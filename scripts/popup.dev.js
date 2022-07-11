@@ -15,9 +15,16 @@ function init() {
     });
   });
   createAllTags(document.getElementById("tag-container"), chrome, makeTag, getCurrentDomain, "WEBSITES", "TAGS");
-  addTag(document.getElementById("tag-form"), chrome, appendToMainData, getCurrentDomain, "WEBSITES", "TAGS", "DEMARCATOR", "NEW_DEMARCATOR");
-  var form = document.getElementById("all-tags-input-form");
-  listenForTagInput(form, storeDataToStorage, getDataFromStorage, chrome, getCurrentDomain);
+  addTag(document.getElementById("tag-form"), chrome, appendToMainData, getCurrentDomain, "WEBSITES", "TAGS", "DEMARCATOR", "NEW_DEMARCATOR"); // const form = document.getElementById("all-tags-input-form");
+  // listenForTagInput(
+  //     form, 
+  //     storeDataToStorage, 
+  //     getDataFromStorage,
+  //     chrome,
+  //     getCurrentDomain
+  // );
+
+  listenForDemarcator(document.getElementById("demarcator-form"), storeDataToStorage, getDataFromStorage, chrome, getCurrentDomain);
   attatchTagsToURL(document.getElementById("url-inject-button"), chrome, "WEBSITES", "TAGS", "DEMARCATOR", "NEW_DEMARCATOR", getCurrentUrlAndDomain);
 }
 
@@ -89,8 +96,7 @@ function listenForTagInput(form, storeDataToStorage, getDataFromStorage, browser
       event.preventDefault();
       var tagString = this.elements["tags-field"].value;
       var demarcator = this.elements["demarcator-field"].value;
-      var newDemarcator = this.elements["new-demarcator-field"].value; //storeDataToStorage(browser, {ALL_TAGS: tagString, DEMARCATOR: demarcator, NEW_DEMARCATOR: newDemarcator});
-
+      var newDemarcator = this.elements["new-demarcator-field"].value;
       getDataFromStorage(browser, "WEBSITES").then(function (data) {
         var websiteTags = data["WEBSITES"];
         getCurrentDomain(browser).then(function (domain) {
@@ -106,7 +112,29 @@ function listenForTagInput(form, storeDataToStorage, getDataFromStorage, browser
       });
     });
   }
-}
+} //DELET THIS!!!111
+
+
+function listenForDemarcator(form, storeDataToStorage, getDataFromStorage, browser, getCurrentDomain) {
+  if (form) {
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      var demarcator = this.elements["demarcator-field"].value;
+      var newDemarcator = this.elements["new-demarcator-field"].value;
+      getDataFromStorage(browser, "WEBSITES").then(function (data) {
+        var websites = data["WEBSITES"];
+        getCurrentDomain(browser).then(function (domain) {
+          websites[domain]["DEMARCATOR"] = demarcator;
+          websites[domain]["NEW_DEMARCATOR"] = newDemarcator;
+          storeDataToStorage(browser, {
+            WEBSITES: websites
+          });
+        });
+      });
+    });
+  }
+} //DELET^^^^^^^^^^^^^^^^^^^^^
+
 
 function getCurrentDomain(browser) {
   return new Promise(function (resolve) {
@@ -172,13 +200,18 @@ function listenForURLJnject(button, browser, tagsStorageKey, demarcatorKey, newD
 function attatchTagsToURL(button, browser, mainKey, tagsKey, demarcatorKey, newDemarcatorKey, getCurrentUrlAndDomain) {
   if (button) {
     button.addEventListener("click", function () {
+      console.log("added event listener to button");
       getCurrentUrlAndDomain(browser).then(function (urlObject) {
         browser.storage.local.get(mainKey, function (data) {
           var webistes = data[mainKey];
           var domain = urlObject.domain; //this is very coupled, using different fucntions to get the url and the domain separately is unweildy but better practice
 
           var currentWebsiteData = webistes[domain];
-          var tagString = currentWebsiteData[tagsKey];
+          var tags = currentWebsiteData[tagsKey];
+          var tagString = "";
+          tags.forEach(function (tag) {
+            tagString += tag;
+          });
           var demarcator = currentWebsiteData[demarcatorKey];
           var newDemarcator = currentWebsiteData[newDemarcatorKey];
           var currentUrl = urlObject.url;

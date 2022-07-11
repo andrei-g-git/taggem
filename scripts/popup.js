@@ -37,12 +37,19 @@ function init(){
         "NEW_DEMARCATOR"      
     );
 
-    const form = document.getElementById("all-tags-input-form");
-    listenForTagInput(
-        form, 
+    // const form = document.getElementById("all-tags-input-form");
+    // listenForTagInput(
+    //     form, 
+    //     storeDataToStorage, 
+    //     getDataFromStorage,
+    //     chrome,
+    //     getCurrentDomain
+    // );
+    listenForDemarcator(
+        document.getElementById("demarcator-form"), 
         storeDataToStorage, 
-        getDataFromStorage,
-        chrome,
+        getDataFromStorage, 
+        chrome, 
         getCurrentDomain
     );
 
@@ -129,7 +136,6 @@ function listenForTagInput(form, storeDataToStorage, getDataFromStorage, browser
             const tagString = this.elements["tags-field"].value;
             const demarcator = this.elements["demarcator-field"].value;
             const newDemarcator = this.elements["new-demarcator-field"].value;
-            //storeDataToStorage(browser, {ALL_TAGS: tagString, DEMARCATOR: demarcator, NEW_DEMARCATOR: newDemarcator});
             getDataFromStorage(browser, "WEBSITES")
                 .then(data => {
                     let websiteTags = data["WEBSITES"];
@@ -144,8 +150,33 @@ function listenForTagInput(form, storeDataToStorage, getDataFromStorage, browser
 
         });        
     }
-
 }
+
+
+//DELET THIS!!!111
+function listenForDemarcator(form, storeDataToStorage, getDataFromStorage, browser, getCurrentDomain){
+    if(form){
+        form.addEventListener("submit", function(event){
+            event.preventDefault();
+            const demarcator = this.elements["demarcator-field"].value;
+            const newDemarcator = this.elements["new-demarcator-field"].value;
+            getDataFromStorage(browser, "WEBSITES")
+                .then(data => {
+                    let websites = data["WEBSITES"];
+                    getCurrentDomain(browser)
+                        .then(domain => {
+                            websites[domain]["DEMARCATOR"] = demarcator;
+                            websites[domain]["NEW_DEMARCATOR"] = newDemarcator;
+                            storeDataToStorage(browser, {
+                                WEBSITES: websites
+                            });
+                        })
+                })
+
+        });        
+    }
+}
+//DELET^^^^^^^^^^^^^^^^^^^^^
 
 function getCurrentDomain(browser){
     return new Promise(resolve => {
@@ -206,13 +237,18 @@ function attatchTagsToURL(
 ){
     if(button){
         button.addEventListener("click", function(){
+            console.log("added event listener to button")
             getCurrentUrlAndDomain(browser)
                 .then(urlObject => {
                     browser.storage.local.get(mainKey, function(data){
                         const webistes = data[mainKey];
                         const domain = urlObject.domain; //this is very coupled, using different fucntions to get the url and the domain separately is unweildy but better practice
                         const currentWebsiteData = webistes[domain];
-                        const tagString = currentWebsiteData[tagsKey];
+                        const tags = currentWebsiteData[tagsKey];
+                        let tagString = "";
+                        tags.forEach(tag => {
+                            tagString += tag;
+                        });
                         const demarcator = currentWebsiteData[demarcatorKey]; 
                         const newDemarcator = currentWebsiteData[newDemarcatorKey];
                         const currentUrl = urlObject.url;
