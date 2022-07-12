@@ -1,0 +1,7 @@
+.tag-container{
+    display: flex;
+    width: 100px;
+    gap: 10px;
+    flex-wrap: wrap;
+    border: solid 1px gray;
+}

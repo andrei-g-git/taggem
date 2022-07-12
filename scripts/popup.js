@@ -1,6 +1,12 @@
+/* 
+    import createTag from components/smallComponents.js
+*/
+
 document.addEventListener( 'DOMContentLoaded', init );
 
 function init(){
+
+    //sayHastaLaVista(); //works
 
     getDataFromStorage(browser, "WEBSITES")
         .then(data => {
@@ -20,7 +26,7 @@ function init(){
     createAllTags(
         document.getElementById("tag-container"),
         chrome,
-        makeTag,
+        createTag,
         getCurrentDomain,
         "WEBSITES",
         "TAGS"
@@ -64,7 +70,7 @@ function init(){
     )
 }
 
-function createAllTags(container, browser, makeTag, getCurrentDomain, mainKey, tagsKey){
+function createAllTags(container, browser, createTag, getCurrentDomain, mainKey, tagsKey){
     if(container){
         getCurrentDomain(browser)
             .then(domain => {
@@ -73,21 +79,12 @@ function createAllTags(container, browser, makeTag, getCurrentDomain, mainKey, t
                     const forCurrentWebsite = websites[domain];
                     const tags = forCurrentWebsite[tagsKey];
                     tags.forEach((tagString, index) => {
-                        const tagElement = makeTag(tagString, index);
+                        const tagElement = createTag(tagString, index);
                         container.appendChild(tagElement);
                     });
                 })
             })
     }
-}
-
-function makeTag(content, index){
-    const tag = document.createElement("div");
-    tag.setAttribute("class", "tag");
-    tag.setAttribute("id", "tag-" + index);
-    tag.setAttribute("value", content);
-    tag.appendChild(document.createTextNode(content));
-    return tag;
 }
 
 function addTag(form, browser, appendToMainData, getCurrentDomain, mainKey, tagsKey, demarcatorKey, newDemarcatorKey){
