@@ -23,8 +23,8 @@ function init(){
                         "def",
                         "ghi"
                     ],
-                    "DEMARCATOR": "Page",
-                    "NEW_DEMARCATOR": "DIIIICK"
+                    "MARK": "Page",
+                    "END_MARK": "DIIIICK"
                 }
             }});
         })
@@ -55,8 +55,8 @@ function init(){
         getCurrentDomain,
         "WEBSITES",
         "TAGS",
-        "DEMARCATOR",
-        "NEW_DEMARCATOR"      
+        keys.MARK,
+        keys.END_MARK      
     );
 
     listenForDemarcator(
@@ -72,8 +72,8 @@ function init(){
         chrome, 
         "WEBSITES",
         "TAGS",
-        "DEMARCATOR",
-        "NEW_DEMARCATOR",  
+        keys.MARK,
+        keys.END_MARK,  
         getCurrentDomain,
         getCurrentUrl
     )
@@ -154,30 +154,6 @@ function appendToMainData(browser, mainKey, tagsKey, demarcatorKey, newDemarcato
 
 }
 
-// function listenForTagInput(form, storeDataToStorage, getDataFromStorage, browser, getCurrentDomain){
-//     if(form){
-//         form.addEventListener("submit", function(event){
-//             event.preventDefault();
-//             const tagString = this.elements["tags-field"].value;
-//             const demarcator = this.elements["demarcator-field"].value;
-//             const newDemarcator = this.elements["new-demarcator-field"].value;
-//             getDataFromStorage(browser, "WEBSITES")
-//                 .then(data => {
-//                     let websiteTags = data["WEBSITES"];
-//                     getCurrentDomain(browser)
-//                         .then(domain => {
-//                             websiteTags[domain] = {TAGS: tagString, DEMARCATOR: demarcator, NEW_DEMARCATOR: newDemarcator}
-//                             storeDataToStorage(browser, {
-//                                 WEBSITES: websiteTags
-//                             });
-//                         })
-//                 })
-
-//         });        
-//     }
-// }
-
-
 //DELET THIS!!!111
 function listenForDemarcator(form, storeDataToStorage, getDataFromStorage, browser, getCurrentDomain){
     if(form){
@@ -188,13 +164,13 @@ function listenForDemarcator(form, storeDataToStorage, getDataFromStorage, brows
             const demarcator = demarcatorInput.value;
             const newDemarcator = newDemarcatorInput.value;
 
-            getDataFromStorage(browser, "WEBSITES")
+            getDataFromStorage(browser, keys.MAIN)
                 .then(data => {
-                    let websites = data["WEBSITES"];
+                    let websites = data[keys.MAIN];
                     getCurrentDomain(browser)
                         .then(domain => {
-                            websites[domain]["DEMARCATOR"] = demarcator;
-                            websites[domain]["NEW_DEMARCATOR"] = newDemarcator;
+                            websites[domain][keys.MARK] = demarcator;
+                            websites[domain][keys.END_MARK] = newDemarcator;
                             storeDataToStorage(browser, {
                                 WEBSITES: websites
                             });
@@ -270,7 +246,7 @@ function getTagsAndDemarcators(domain, browser, mainKey, tagsKey, demarcatorKey,
     });
 }
 
-function updateUrl(browser, currentUrl, tagString, demarcator, newDemarcator){
+function updateUrl_old(browser, currentUrl, tagString, demarcator, newDemarcator){
     if(currentUrl.includes(demarcator)){
         let urlWithTags = currentUrl.replace(demarcator, (newDemarcator? newDemarcator : demarcator) + tagString);
         console.log("FINAL URL:   " + urlWithTags)
@@ -280,4 +256,21 @@ function updateUrl(browser, currentUrl, tagString, demarcator, newDemarcator){
     }
 }
 
+function updateUrl(browser, currentUrl, tagString, demarcator, newDemarcator){
+    if(currentUrl.includes(demarcator)){
+        let toReplace = "";
+        const start = currentUrl.indexOf(demarcator) + demarcator.length;
+        if(newDemarcator && newDemarcator.length > 0){
+            const end = currentUrl.indexOf(newDemarcator);
+            toReplace = currentUrl.slice(start, end);
+        } else {
+            toReplace = currentUrl.slice(start);
+        }
 
+        let urlWithTags = currentUrl.replace(demarcator + toReplace, demarcator + tagString);
+        console.log("FINAL URL:   " + urlWithTags)
+        browser.tabs.update({url: urlWithTags})
+    } else {
+        console.log("no demarcator match, should be: " + demarcator);
+    }
+}
