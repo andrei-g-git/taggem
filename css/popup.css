@@ -5,3 +5,11 @@
     flex-wrap: wrap;
     border: solid 1px gray;
 }
+
+.mark-container{
+    display: flex;
+    background-color: lightblue;
+    width: 200px;
+    height: 50px;
+    gap: 15px;
+}

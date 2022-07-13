@@ -65,3 +65,25 @@ function getCurrentDomainAndUrl(browser){
       });
   });
 }
+
+function getDomainData(browser, domain, mainKey){
+   return new Promise(resolve => {
+      browser.storage.local.get(mainKey, data => {
+         const websites = data[mainKey];
+         resolve(websites[domain]);
+      });
+   });
+}
+
+function getDomainDataAfterDomainCheck(browser, mainKey){
+   return new Promise(resolve => {
+      getCurrentDomain(browser)
+         .then(domain => {
+            getDomainData(browser, domain, mainKey)
+               .then(domainData => {
+                  resolve(domainData);
+               })
+         });
+   });
+
+}
