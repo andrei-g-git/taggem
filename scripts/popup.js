@@ -7,14 +7,16 @@
         storeDataToStorage,
         getDataFromStorage 
     from utils/utils.js
+
+    import keys from emums/enums.js
 */
 
 document.addEventListener( 'DOMContentLoaded', init );
 
 function init(){
-    getDataFromStorage(browser, "WEBSITES")
+    getDataFromStorage(browser, keys.MAIN)
         .then(data => {
-            if(! data["WEBSITES"]) storeDataToStorage(browser, {WEBSITES: {
+            if(! data[keys.MAIN]) storeDataToStorage(browser, {WEBSITES: {
                 "en.wikipedia.org": {
                     "TAGS": [
                         "abc",
@@ -190,7 +192,6 @@ function listenForDemarcator(form, storeDataToStorage, getDataFromStorage, brows
                             });
                         })
                 })
-
         });        
     }
 }
@@ -211,16 +212,6 @@ function attatchTagsToURL(
             console.log("added event listener to button")
             getCurrentDomain(browser)
                 .then(domain => {
-                    // browser.storage.local.get(mainKey, function(data){
-                    //     const webistes = data[mainKey];
-                    //     const currentWebsiteData = webistes[domain];
-                    //     const tags = currentWebsiteData[tagsKey];
-                    //     let tagString = "";
-                    //     tags.forEach(tag => {
-                    //         tagString += tag;
-                    //     });
-                    //     const demarcator = currentWebsiteData[demarcatorKey]; 
-                    //     const newDemarcator = currentWebsiteData[newDemarcatorKey];
                     getTagsAndDemarcators(
                         domain, 
                         browser,
@@ -233,17 +224,15 @@ function attatchTagsToURL(
                             const {tagString, demarcator, newDemarcator} = affixObject;
                             getCurrentUrl(browser)
                                 .then(currentUrl => {
-                                    if(currentUrl.includes(demarcator)){
-                                        let urlWithTags = currentUrl.replace(demarcator, (newDemarcator? newDemarcator : demarcator) + tagString);
-                                        console.log("FINAL URL:   " + urlWithTags)
-                                        browser.tabs.update({url: urlWithTags})
-                                    } else {
-                                        console.log("no demarcator match, should be: " + demarcator);
-                                    }
+                                    updateUrl(
+                                        browser, 
+                                        currentUrl, 
+                                        tagString, 
+                                        demarcator, 
+                                        newDemarcator
+                                    )
                                 });
                         });
-
-                    //});
                 })
         });
 
@@ -266,6 +255,16 @@ function getTagsAndDemarcators(domain, browser, mainKey, tagsKey, demarcatorKey,
             resolve({tagString: tagString, demarcator: demarcator, newDemarcator: newDemarcator});
         });
     });
+}
+
+function updateUrl(browser, currentUrl, tagString, demarcator, newDemarcator){
+    if(currentUrl.includes(demarcator)){
+        let urlWithTags = currentUrl.replace(demarcator, (newDemarcator? newDemarcator : demarcator) + tagString);
+        console.log("FINAL URL:   " + urlWithTags)
+        browser.tabs.update({url: urlWithTags})
+    } else {
+        console.log("no demarcator match, should be: " + demarcator);
+    }
 }
 
 
