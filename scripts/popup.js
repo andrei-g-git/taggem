@@ -20,9 +20,9 @@ function init(){
             if(! data[keys.MAIN]) storeDataToStorage(browser, {WEBSITES: {
                 "en.wikipedia.org": {
                     "TAGS": [
-                        "abc",
-                        "def",
-                        "ghi"
+                        {tag: "abc", color: "#000000"},
+                        {tag: "def", color: "000000"},
+                        {tag: "ghi", color: "000000"}
                     ],
                     "MARK": "Page",
                     "END_MARK": "DIIIICK"
@@ -106,20 +106,13 @@ function createAllTags(container, browser, createTag, getCurrentDomain, mainKey,
         container.innerHTML = "";
         getCurrentDomain(browser)
             .then(domain => {
-                // browser.storage.local.get(mainKey, data => {
-                //     const websites = data[mainKey];
-                //     const forCurrentWebsite = websites[domain];
-                //     const tags = forCurrentWebsite[tagsKey];
-                //     tags.forEach((tagString, index) => {
-                //         const tagElement = createTag(tagString, index);
-                //         container.appendChild(tagElement);
-                //     });
-                // })
                 getDomainData(browser, domain, mainKey)
                     .then(domainData => {
                         const tags = domainData[tagsKey];
-                        tags.forEach((tagString, index) => {
-                            const tagElement = createTag(tagString, index);
+                        tags.forEach((tagObject/* String */, index) => {
+                            const tagString = tagObject.tag;
+                            const color = tagObject.color;
+                            const tagElement = createTag(tagString, color, index);
                             container.appendChild(tagElement);
                         });
                     });
@@ -191,6 +184,9 @@ function addTag(form, browser, appendToMainData, getCurrentDomain, mainKey, tags
     }
 }
 
+//##################################
+//##################################
+//##################################
 function appendToMainData(browser, mainKey, tagsKey, demarcatorKey, newDemarcatorKey, newTag, domain){
     return new Promise(resolve => {
         browser.storage.local.get(mainKey, function(data){
@@ -203,7 +199,10 @@ function appendToMainData(browser, mainKey, tagsKey, demarcatorKey, newDemarcato
                 emptyDomainData[newDemarcatorKey] = "";
             }
             const forThisWebsite = websites[domain];
-            forThisWebsite[tagsKey].push(newTag);
+            forThisWebsite[tagsKey].push({
+                tag:newTag, 
+                color: randomColor()
+            });
             resolve(websites);
         });
     });
@@ -290,8 +289,8 @@ function getTagsAndDemarcators(domain, browser, mainKey, tagsKey, demarcatorKey,
             const currentWebsiteData = webistes[domain];
             const tags = currentWebsiteData[tagsKey];
             let tagString = "";
-            tags.forEach(tag => {
-                tagString += tag;
+            tags.forEach(tagObject => {
+                tagString += tagObject.tag;
             });
             const demarcator = currentWebsiteData[demarcatorKey]; 
             const newDemarcator = currentWebsiteData[newDemarcatorKey];   
@@ -300,14 +299,14 @@ function getTagsAndDemarcators(domain, browser, mainKey, tagsKey, demarcatorKey,
     });
 }
 
-function updateUrl_old(browser, currentUrl, tagString, demarcator, newDemarcator){
-    if(currentUrl.includes(demarcator)){
-        let urlWithTags = currentUrl.replace(demarcator, (newDemarcator? newDemarcator : demarcator) + tagString);
-        browser.tabs.update({url: urlWithTags})
-    } else {
-        console.log("no demarcator match, should be: " + demarcator);
-    }
-}
+// function updateUrl_old(browser, currentUrl, tagString, demarcator, newDemarcator){
+//     if(currentUrl.includes(demarcator)){
+//         let urlWithTags = currentUrl.replace(demarcator, (newDemarcator? newDemarcator : demarcator) + tagString);
+//         browser.tabs.update({url: urlWithTags})
+//     } else {
+//         console.log("no demarcator match, should be: " + demarcator);
+//     }
+// }
 
 function updateUrl(browser, currentUrl, tagString, demarcator, newDemarcator){
     if(currentUrl.includes(demarcator)){
