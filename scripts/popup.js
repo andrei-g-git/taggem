@@ -114,7 +114,8 @@ function addTag(form, browser, appendToMainData, getCurrentDomain, mainKey, tags
     if(form){
         form.addEventListener("submit", function(event){
             event.preventDefault();
-            const newTag = this.elements["tag-field"].value;
+            const input = this.elements["tag-field"];
+            const newTag = input.value;
             getCurrentDomain(browser)
                 .then(domain => {
                     appendToMainData(browser, mainKey, tagsKey, demarcatorKey, newDemarcatorKey, newTag, domain)
@@ -124,7 +125,11 @@ function addTag(form, browser, appendToMainData, getCurrentDomain, mainKey, tags
                             dataObject[mainKey] = mainData;
                             browser.storage.local.set(dataObject);
                         });
-                });
+                    return "whatever"
+                })
+                .then(result => {
+                    input.value = "";
+                })
 
         });
     }
@@ -149,28 +154,28 @@ function appendToMainData(browser, mainKey, tagsKey, demarcatorKey, newDemarcato
 
 }
 
-function listenForTagInput(form, storeDataToStorage, getDataFromStorage, browser, getCurrentDomain){
-    if(form){
-        form.addEventListener("submit", function(event){
-            event.preventDefault();
-            const tagString = this.elements["tags-field"].value;
-            const demarcator = this.elements["demarcator-field"].value;
-            const newDemarcator = this.elements["new-demarcator-field"].value;
-            getDataFromStorage(browser, "WEBSITES")
-                .then(data => {
-                    let websiteTags = data["WEBSITES"];
-                    getCurrentDomain(browser)
-                        .then(domain => {
-                            websiteTags[domain] = {TAGS: tagString, DEMARCATOR: demarcator, NEW_DEMARCATOR: newDemarcator}
-                            storeDataToStorage(browser, {
-                                WEBSITES: websiteTags
-                            });
-                        })
-                })
+// function listenForTagInput(form, storeDataToStorage, getDataFromStorage, browser, getCurrentDomain){
+//     if(form){
+//         form.addEventListener("submit", function(event){
+//             event.preventDefault();
+//             const tagString = this.elements["tags-field"].value;
+//             const demarcator = this.elements["demarcator-field"].value;
+//             const newDemarcator = this.elements["new-demarcator-field"].value;
+//             getDataFromStorage(browser, "WEBSITES")
+//                 .then(data => {
+//                     let websiteTags = data["WEBSITES"];
+//                     getCurrentDomain(browser)
+//                         .then(domain => {
+//                             websiteTags[domain] = {TAGS: tagString, DEMARCATOR: demarcator, NEW_DEMARCATOR: newDemarcator}
+//                             storeDataToStorage(browser, {
+//                                 WEBSITES: websiteTags
+//                             });
+//                         })
+//                 })
 
-        });        
-    }
-}
+//         });        
+//     }
+// }
 
 
 //DELET THIS!!!111
@@ -178,8 +183,11 @@ function listenForDemarcator(form, storeDataToStorage, getDataFromStorage, brows
     if(form){
         form.addEventListener("submit", function(event){
             event.preventDefault();
-            const demarcator = this.elements["demarcator-field"].value;
-            const newDemarcator = this.elements["new-demarcator-field"].value;
+            const demarcatorInput = this.elements["demarcator-field"];
+            const newDemarcatorInput = this.elements["new-demarcator-field"];
+            const demarcator = demarcatorInput.value;
+            const newDemarcator = newDemarcatorInput.value;
+
             getDataFromStorage(browser, "WEBSITES")
                 .then(data => {
                     let websites = data["WEBSITES"];
@@ -191,6 +199,11 @@ function listenForDemarcator(form, storeDataToStorage, getDataFromStorage, brows
                                 WEBSITES: websites
                             });
                         })
+                    return "whatever";
+                })
+                .then(result => {
+                    demarcatorInput.value = "";
+                    newDemarcatorInput.value = "";
                 })
         });        
     }
