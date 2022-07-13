@@ -1,13 +1,17 @@
-/* 
+/* PSEUDO IMPORTS, CAN GET AUTOMATICALL FROM A SCRIPT DECLARED ABOVE
+
     import createTag from components/smallComponents.js
+
+    import getCurrentDomain, 
+        getCurrentUrl,
+        storeDataToStorage,
+        getDataFromStorage 
+    from utils/utils.js
 */
 
 document.addEventListener( 'DOMContentLoaded', init );
 
 function init(){
-
-    //sayHastaLaVista(); //works
-
     getDataFromStorage(browser, "WEBSITES")
         .then(data => {
             if(! data["WEBSITES"]) storeDataToStorage(browser, {WEBSITES: {
@@ -32,6 +36,16 @@ function init(){
         "TAGS"
     );
 
+    refreshTags(
+        document.getElementById("tag-container"),
+        chrome,
+        createAllTags,
+        createTag,
+        getCurrentDomain,
+        "WEBSITES",
+        "TAGS"        
+    )
+
     addTag(
         document.getElementById("tag-form"),
         chrome,
@@ -43,14 +57,6 @@ function init(){
         "NEW_DEMARCATOR"      
     );
 
-    // const form = document.getElementById("all-tags-input-form");
-    // listenForTagInput(
-    //     form, 
-    //     storeDataToStorage, 
-    //     getDataFromStorage,
-    //     chrome,
-    //     getCurrentDomain
-    // );
     listenForDemarcator(
         document.getElementById("demarcator-form"), 
         storeDataToStorage, 
@@ -66,12 +72,14 @@ function init(){
         "TAGS",
         "DEMARCATOR",
         "NEW_DEMARCATOR",  
-        getCurrentUrlAndDomain
+        getCurrentDomain,
+        getCurrentUrl
     )
 }
 
 function createAllTags(container, browser, createTag, getCurrentDomain, mainKey, tagsKey){
     if(container){
+        container.innerHTML = "";
         getCurrentDomain(browser)
             .then(domain => {
                 browser.storage.local.get(mainKey, data => {
@@ -85,6 +93,19 @@ function createAllTags(container, browser, createTag, getCurrentDomain, mainKey,
                 })
             })
     }
+}
+
+function refreshTags(container, browser, createAllTags, createTag, getCurrentDomain, mainKey, tagsKey){
+    browser.storage.local.onChanged.addListener(changes => {
+        createAllTags(
+            container,
+            browser,
+            createTag,
+            getCurrentDomain,
+            mainKey,
+            tagsKey
+        )
+    });
 }
 
 function addTag(form, browser, appendToMainData, getCurrentDomain, mainKey, tagsKey, demarcatorKey, newDemarcatorKey){
@@ -175,54 +196,6 @@ function listenForDemarcator(form, storeDataToStorage, getDataFromStorage, brows
 }
 //DELET^^^^^^^^^^^^^^^^^^^^^
 
-function getCurrentDomain(browser){
-    return new Promise(resolve => {
-        browser.tabs.query({active: true, currentWindow: true}, result => {
-            const activeTab = result[0];
-            const url = new URL(activeTab.url);
-            const domain = url.hostname;
-            resolve(domain);
-        });
-    });
-}
-
-function getCurrentUrlAndDomain(browser){
-    return new Promise(resolve => {
-        browser.tabs.query({active: true, currentWindow: true}, result => {
-            const activeTab = result[0];
-            const url = new URL(activeTab.url);
-            const domain = url.hostname;
-            resolve({url: url.href, domain: domain});
-        });
-    });
-}
-
-function listenForURLJnject(button, browser, tagsStorageKey, demarcatorKey, newDemarcatorKey){
-    if(button){
-        button.addEventListener("click", function(){
-            browser.storage.local.get([tagsStorageKey, demarcatorKey, newDemarcatorKey], function(data){
-
-                console.log(JSON.stringify(data))
-                const tagString = data[tagsStorageKey];
-                const demarcator = data[demarcatorKey]; 
-                const newDemarcator = data[newDemarcatorKey];
-                browser.tabs.query({active: true, currentWindow: true}, (tabResults) => {
-                    const activeTab = tabResults[0];
-                    const currentUrl = activeTab.url;
-                    console.log("demarcator:    " + demarcator + "   and the key:    " + demarcatorKey + "  and the tags: " + tagString + "   new demarcator" + newDemarcator)
-                    if(currentUrl.includes(demarcator)){
-                        let urlWithTags = currentUrl.replace(demarcator, (newDemarcator? newDemarcator : demarcator) + tagString);
-                        browser.tabs.update({url: urlWithTags})
-                    } else {
-                        console.log("no demarcator match, should be: " + demarcator);
-                    }
-                });
-
-            })
-        });
-    }
-}
-
 function attatchTagsToURL(
     button, 
     browser, 
@@ -230,52 +203,69 @@ function attatchTagsToURL(
     tagsKey,
     demarcatorKey,
     newDemarcatorKey,    
-    getCurrentUrlAndDomain
+    getCurrentDomain,
+    getCurrentUrl
 ){
     if(button){
         button.addEventListener("click", function(){
             console.log("added event listener to button")
-            getCurrentUrlAndDomain(browser)
-                .then(urlObject => {
-                    browser.storage.local.get(mainKey, function(data){
-                        const webistes = data[mainKey];
-                        const domain = urlObject.domain; //this is very coupled, using different fucntions to get the url and the domain separately is unweildy but better practice
-                        const currentWebsiteData = webistes[domain];
-                        const tags = currentWebsiteData[tagsKey];
-                        let tagString = "";
-                        tags.forEach(tag => {
-                            tagString += tag;
+            getCurrentDomain(browser)
+                .then(domain => {
+                    // browser.storage.local.get(mainKey, function(data){
+                    //     const webistes = data[mainKey];
+                    //     const currentWebsiteData = webistes[domain];
+                    //     const tags = currentWebsiteData[tagsKey];
+                    //     let tagString = "";
+                    //     tags.forEach(tag => {
+                    //         tagString += tag;
+                    //     });
+                    //     const demarcator = currentWebsiteData[demarcatorKey]; 
+                    //     const newDemarcator = currentWebsiteData[newDemarcatorKey];
+                    getTagsAndDemarcators(
+                        domain, 
+                        browser,
+                        mainKey,
+                        tagsKey,
+                        demarcatorKey,
+                        newDemarcatorKey
+                    )
+                        .then(affixObject => {
+                            const {tagString, demarcator, newDemarcator} = affixObject;
+                            getCurrentUrl(browser)
+                                .then(currentUrl => {
+                                    if(currentUrl.includes(demarcator)){
+                                        let urlWithTags = currentUrl.replace(demarcator, (newDemarcator? newDemarcator : demarcator) + tagString);
+                                        console.log("FINAL URL:   " + urlWithTags)
+                                        browser.tabs.update({url: urlWithTags})
+                                    } else {
+                                        console.log("no demarcator match, should be: " + demarcator);
+                                    }
+                                });
                         });
-                        const demarcator = currentWebsiteData[demarcatorKey]; 
-                        const newDemarcator = currentWebsiteData[newDemarcatorKey];
-                        const currentUrl = urlObject.url;
-                        console.log("main data etc:    " + JSON.stringify(webistes) + "   " + domain + "   " + currentUrl + "    " + demarcator)
-                        if(currentUrl.includes(demarcator)){
-                            let urlWithTags = currentUrl.replace(demarcator, (newDemarcator? newDemarcator : demarcator) + tagString);
-                            console.log("FINAL URL:   " + urlWithTags)
-                            browser.tabs.update({url: urlWithTags})
-                        } else {
-                            console.log("no demarcator match, should be: " + demarcator);
-                        }
-                    });
+
+                    //});
                 })
         });
 
     }
 }
 
-async function storeDataToStorage(browser, data){
-    return new Promise((resolve, reject) => {
-        browser.storage.local.set(data, function(){
-            resolve("sent tag list to local storage");
+function getTagsAndDemarcators(domain, browser, mainKey, tagsKey, demarcatorKey, newDemarcatorKey){
+    return new Promise(resolve => {
+        browser.storage.local.get(mainKey, function(data){
+            const webistes = data[mainKey];
+            const currentWebsiteData = webistes[domain];
+            const tags = currentWebsiteData[tagsKey];
+            let tagString = "";
+            tags.forEach(tag => {
+                tagString += tag;
+            });
+            const demarcator = currentWebsiteData[demarcatorKey]; 
+            const newDemarcator = currentWebsiteData[newDemarcatorKey];   
+            console.log("from helper function",tagString, demarcator, newDemarcator) //##################
+            resolve({tagString: tagString, demarcator: demarcator, newDemarcator: newDemarcator});
         });
     });
 }
 
-async function getDataFromStorage(browser, ...keys){ //this doesn't actually retrieve more than 1 key/value pair
-    return new Promise((resolve, reject) => {
-        browser.storage.local.get([...keys], function(data){
-            resolve(data);
-        });
-    });
-}
+

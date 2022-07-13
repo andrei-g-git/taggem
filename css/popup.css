@@ -1,6 +1,6 @@
 .tag-container{
     display: flex;
-    width: 100px;
+    width: 200px;
     gap: 10px;
     flex-wrap: wrap;
     border: solid 1px gray;
