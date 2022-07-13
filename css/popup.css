@@ -1,9 +1,13 @@
+.tag-container-padding{
+    padding: 6px 4px;
+}
+
 .tag-container{
     display: flex;
     width: 200px;
     gap: 10px;
     flex-wrap: wrap;
-    border: solid 1px gray;
+/*     border: solid 1px gray; */
 }
 
 .mark-container{

@@ -1,6 +1,6 @@
 .tag{
     height: 1.4rem;
-    border-radius: 3px;
+    /* border-radius: 3px; */
     color: white;
     padding: 0 0.5rem;
 }
@@ -8,3 +8,26 @@
 .mark{
     border: 1px solid red;
 }
+
+
+/* .tag{
+    background: lightskyblue;
+    display: inline-block;
+    height: 55px;
+    margin-left: 20px;
+    margin-top: 55px;
+    position: relative;
+    width: 100px;
+  }
+  .tag:before {
+    border-bottom: 35px solid lightskyblue;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    content: "";
+    height: 0;
+    left: 0;
+    position: absolute;
+    top: -35px;
+    width: 0;
+    transform: rotate(90deg);
+  } */

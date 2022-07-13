@@ -9,10 +9,23 @@ function createTag(content, color, index){
     tag.setAttribute("value", content);
 
     // tag.setAttribute("style", `background-color: ${randomColor()}`);
-    tag.setAttribute("style", `background-color: ${color}`);
+    tag.setAttribute("style", /* `background-color: ${color}` */getTagStyle(color));
 
     tag.appendChild(document.createTextNode(content));
     return tag;
+}
+
+function getTagStyle(color){
+    // return`
+    //     border-left: solid 30px ${color};
+    //     border-top: solid 500px transparent;
+    //     border-bottom: solid 500px transparent;
+    //     background-color: ${color};
+    // `;
+    return `
+        border-left: solid 4px ${color};
+        background-color: rgb(220, 220, 220);
+    `;
 }
 
 function createMark(content, isNOTEndMark){
