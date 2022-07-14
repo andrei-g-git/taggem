@@ -50,6 +50,10 @@ body{
     gap: 15px;
 }
 
+.container-label{
+    color: #8B8B8B;
+}
+
 .tag-form,
 .mark-form{
     display: flex;
@@ -81,4 +85,14 @@ body{
 .form-submit{
     height: 1.2rem;
 
+}
+
+.url-inject-button{
+    margin-top: 0.5rem;
+    padding: 0.2rem;
+    border: transparent; /*  ¯\_(ツ)_/¯  */
+    border-radius: 7px;
+    background-color: #7cf9d6;
+    font-size: large;
+    color: white;
 }

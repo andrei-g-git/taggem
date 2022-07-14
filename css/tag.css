@@ -18,13 +18,24 @@
   border-bottom-left-radius: 3px;
 }
 
-.mark{
-    /* border: 1px solid red; */
-    border-radius: 3px;
-    background-color: white;
-    color: #0D5E9D;
+.mark-label{
+  color: #8F8F8F;
 }
 
+.mark{
+    /* border: 1px solid red; */
+    border-radius: 4px;
+    background-color: white;
+    color: #0D5E9D;
+    padding: 0;
+    padding: 0.1rem 0.2rem;
+}
+
+.mark-group{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
 
 /* .tag{
     background: lightskyblue;

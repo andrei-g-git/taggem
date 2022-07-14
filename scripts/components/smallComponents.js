@@ -40,13 +40,31 @@ function getNudgeStyle(color){
     `;
 }
 
-function createMark(content, isNOTEndMark){
+function createMarkGroup(content, isNOTEndMark){
     const mark = document.createElement("div");
     mark.setAttribute("class", "mark");
+    let label = "start:";
     let affix = "";
-    if(! isNOTEndMark) affix = "-end";
+    if(! isNOTEndMark){
+        affix = "-end";
+        label = "end:";
+    }
     mark.setAttribute("id", "mark" + affix);
     mark.setAttribute("value", content);
     mark.appendChild(document.createTextNode(content));
-    return mark;
+
+    const labelTag = document.createElement("label");
+    labelTag.setAttribute("class", "mark-label");
+    labelTag.setAttribute("id", "mark-label" + affix);
+    labelTag.setAttribute("for", "mark-label" + affix);
+    labelTag.appendChild(document.createTextNode(label));
+
+    const markGroup = document.createElement("div");
+    markGroup.setAttribute("class", "mark-group");
+    markGroup.setAttribute("id", "mark-group" + affix);
+    
+    markGroup.appendChild(labelTag);   
+    markGroup.appendChild(mark);
+
+    return markGroup;//mark;
 }

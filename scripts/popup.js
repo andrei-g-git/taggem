@@ -1,6 +1,6 @@
 /* PSEUDO IMPORTS, CAN GET AUTOMATICALL FROM A SCRIPT DECLARED ABOVE
 
-    import createTag, createMark from components/smallComponents.js
+    import createTag, createMarkGroup from components/smallComponents.js
 
     import getCurrentDomain, 
         getCurrentUrl,
@@ -71,7 +71,7 @@ function init(){
     createMarks(
         document.getElementById("mark-container"), 
         chrome, 
-        createMark, 
+        createMarkGroup, 
         keys.MAIN, 
         keys.MARK, 
         keys.END_MARK,
@@ -82,7 +82,7 @@ function init(){
         document.getElementById("mark-container"),
         chrome,
         createMarks,
-        createMark,
+        createMarkGroup,
         getDomainDataAfterDomainCheck,
         keys.MAIN, 
         keys.MARK, 
@@ -101,6 +101,16 @@ function init(){
     )
 }
 
+function deleteTagByName(name, domain, mainKey, browser){
+    const model = new MainData(browser, keys.TAGS);
+    model.loadMainData(mainKey)
+        .then(result => {
+            model.getMainData(result); //not good, should be called inside the object
+            model.deleteTagByName(name, domain);
+        });
+    
+}
+
 function createAllTags(container, browser, createTag, getCurrentDomain, mainKey, tagsKey){
     if(container){
         container.innerHTML = "";
@@ -114,21 +124,24 @@ function createAllTags(container, browser, createTag, getCurrentDomain, mainKey,
                             const color = tagObject.color;
                             const tagElement = createTag(tagString, color, index);
                             container.appendChild(tagElement);
+
+                            ///////
+                            tagElement.addEventListener("click", () => deleteTagByName(tagString, domain, mainKey, browser));
                         });
                     });
             })
     }
 }
 
-function createMarks(container, browser, createMark, mainKey, markKey, endMarkKey, getDomainDataAfterDomainCheck){
+function createMarks(container, browser, createMarkGroup, mainKey, markKey, endMarkKey, getDomainDataAfterDomainCheck){
     if(container){
         container.innerHTML = "";
         getDomainDataAfterDomainCheck(browser, mainKey)
             .then(domainData => {
                 const mark = domainData[markKey];
                 const endMark = domainData[endMarkKey];
-                container.appendChild(createMark(mark, mark.length));
-                container.appendChild(createMark(endMark, endMark.length));
+                container.appendChild(createMarkGroup(mark, mark.length));
+                container.appendChild(createMarkGroup(endMark, endMark.length));
             });
     }
 }
@@ -146,12 +159,12 @@ function refreshTags(container, browser, createAllTags, createTag, getCurrentDom
     });
 }
 
-function refreshMarks(container, browser, createMarks, createMark, getDomainDataAfterDomainCheck, mainKey, markKey, endMarkKey){
+function refreshMarks(container, browser, createMarks, createMarkGroup, getDomainDataAfterDomainCheck, mainKey, markKey, endMarkKey){
     browser.storage.local.onChanged.addListener(changes => {
         createMarks(
             container,
             browser,
-            createMark,
+            createMarkGroup,
             mainKey,
             markKey, 
             endMarkKey,
