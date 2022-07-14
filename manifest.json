@@ -9,7 +9,8 @@
         "16": "assets/global-icon16.png"
     },
     "web_accessible_resources": [
-        "assets/global-icon48.png"
+        "assets/global-icon48.png",
+        "assets/ok-128.png"
     ],
     "browser_action": {
         "default_icon": "assets/global-icon16.png",

@@ -9,8 +9,14 @@ function createTag(content, color, index){
     tag.setAttribute("value", content);
 
     // tag.setAttribute("style", `background-color: ${randomColor()}`);
-    tag.setAttribute("style", /* `background-color: ${color}` */getTagStyle(color));
+    //tag.setAttribute("style", /* `background-color: ${color}` */getTagStyle(color));
 
+    const coloredNudge = document.createElement("div");
+    coloredNudge.setAttribute("class", "tag-nudge");
+    coloredNudge.setAttribute("id", "tag-nudge-" + index);
+    coloredNudge.setAttribute("style", getNudgeStyle(color))
+
+    tag.appendChild(coloredNudge);
     tag.appendChild(document.createTextNode(content));
     return tag;
 }
@@ -25,6 +31,12 @@ function getTagStyle(color){
     return `
         border-left: solid 4px ${color};
         background-color: rgb(220, 220, 220);
+    `;
+}
+
+function getNudgeStyle(color){
+    return `
+        background-color: ${color};
     `;
 }
 

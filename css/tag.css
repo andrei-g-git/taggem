@@ -1,12 +1,28 @@
 .tag{
-    height: 1.4rem;
-    /* border-radius: 3px; */
-    color: white;
-    padding: 0 0.5rem;
+  height: 1.4rem;
+  border-radius: 3px;
+  color: white;
+  padding-left: calc(2px + 0.5rem); /* (4px + ... */
+  padding-right: 0.5rem;
+  position: relative;
+  background-color: #C9C9C9;
+}
+
+.tag-nudge{
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 4px;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
 }
 
 .mark{
-    border: 1px solid red;
+    /* border: 1px solid red; */
+    border-radius: 3px;
+    background-color: white;
+    color: #0D5E9D;
 }
 
 

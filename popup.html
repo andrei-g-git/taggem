@@ -14,64 +14,88 @@
         <!-- <script src="scripts/popup.js"></script> -->
     </head>
     <body>
+        <div id="main">
 
-        <form class="tag-form"
-            id="tag-form"
-        >
-            <input class="tag-input"
-                id="tag-input"
-                type="text"
-                name="tag-field"
-                required
+            <label class="form-label"
+                id="tag-form-label"
+                for="tag-form"
             >
-            <input class="tag-submit"
-                id="tag-submit"
-                type="submit"
-            >
-        </form>
+                Tags for this site
+            </label>
 
-        <div class="tag-container-padding">
-            <div class="tag-container"
-                id="tag-container"
+            <form class="tag-form"
+                id="tag-form"
             >
-            
-            </div>            
+                <input class="tag-input"
+                    id="tag-input"
+                    type="text"
+                    name="tag-field"
+                    required
+                >
+                <input class="form-submit"
+                    id="tag-submit"
+                    type="image"
+                    src="assets/ok-128.png"
+                >
+            </form>
+
+            <div class="tag-container-padding">
+                <div class="tag-container"
+                    id="tag-container"
+                >
+                
+                </div>            
+            </div>
+
+            <label class="form-label"
+                id="mark-form-label"
+                for="demarcator-form"
+            >
+                Tag groups:
+            </label>
+
+            <form class="mark-form"
+                id="demarcator-form"
+            >
+                <div class="mark-input-group">
+                    <input class="mark-input"
+                        id="demarcator-input"
+                        type="text"
+                        name="demarcator-field"
+                        required
+                    >
+
+                    <input class="mark-input"
+                        id="new-demarcator-input"
+                        type="text"
+                        name="new-demarcator-field"
+                    >      
+                    
+                    
+                </div>
+
+
+                <input class="form-submit"
+                    id="demarcator-submit"
+                    type="image"
+                    src="assets/ok-128.png"
+                >
+            </form>
+
+            <div class="mark-container"
+                id="mark-container"
+            >
+
+            </div>
+
+            <button class="url-inject-button"
+                id="url-inject-button"
+            >
+                Add Tags!
+            </button>
+
         </div>
 
-
-        <form class="demarcator-form"
-            id="demarcator-form"
-        >
-            <input class="demarcator-input"
-                id="demarcator-input"
-                type="text"
-                name="demarcator-field"
-                required
-            >
-
-            <input class="new-demarcator-input"
-                id="new-demarcator-input"
-                type="text"
-                name="new-demarcator-field"
-            >
-
-            <input class="demarcator-submit"
-                id="demarcator-submit"
-                type="submit"
-            >
-        </form>
-
-        <div class="mark-container"
-            id="mark-container"
-        >
-
-        </div>
-
-        <button class="url-inject-button"
-            id="url-inject-button"
-        >
-            Add Tags!
-        </button>
 
         <script src="scripts/enums/enums.js"></script>
         <script src="scripts/utils/utils.js"></script>
