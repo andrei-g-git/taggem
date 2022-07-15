@@ -87,3 +87,20 @@ function getDomainDataAfterDomainCheck(browser, mainKey){
    });
 
 }
+
+function removeAllChildNodes(parent) {
+   while (parent.firstChild) {
+       parent.removeChild(parent.firstChild);
+   }
+}
+
+function removeAllChildNodesAsync(parent/* , refreshes */){
+   return new Promise((resolve, reject) => {
+      setTimeout(() => {
+         /* if(refreshes > 1) */ parent.innerHTML = "";
+         resolve(parent);
+      },
+         20
+      )
+   });
+}

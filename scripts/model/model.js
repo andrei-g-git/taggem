@@ -7,66 +7,42 @@ class MainData{ //this isn't great, it's already stored in local storage, may ca
     }
 
     loadMainData(key){
-        console.log("comeon")
         return new Promise((resolve, reject) => {
             this.browser.storage.local.get(key, function(data){
-                console.log("anything?    key: " + "key")
-                console.log("raw data:  ", data)
                 console.log("WEBSITES: ", data["WEBSITES"])
-                //THIS keyword belongs to the function, not the object
-                //this.mainData = data[/* key */"WEBSITES"]; //feeding a variable doesn't seem to work here for some reason, it just takes the variable name as a key...
-                //console.log("from the model, main data is  ", JSON.stringify(this.mainData)) //not yet assigned value, it's async
-                //this.getMainData(data["WEBSITES"]); //class methods still have to call 'this'
                 resolve(data[/* key */"WEBSITES"]);
             });
-        })
-            //.then(mainData => this.getMainData(mainData));   
-        
-        //test.then(result => { this.getMainData(result)/* ; return result */} )
-        //return test;
+        });
     }
 
     getMainData(data){
-        console.log("getMainData")
-        console.log("from the model, main data is  ", JSON.stringify(data));
         this.mainData = data;
         console.log("this.mainData", JSON.stringify(this.mainData))
     }
 
     storeData(data){
         return new Promise((resolve, reject) => {
-            this.browser.storage.local.set(data, function(){
+            this.browser.storage.local.set({WEBSITES: data}, function(){
                 resolve("sent tag list to local storage");
             });
          });        
     }
 
     deleteTagByIndex(index, domain){
-        // if(this.mainData.length){
-        //     const domainData = this.mainData[domain];
-        //     const tags = domainData[this.TAGS];
-        //     tags.splice(index, 2);
-        // }
         const tags = this.produceTags(domain, this.TAGS);
         tags.splice(index, 2);
         this.storeData(this.mainData);
     }
 
     deleteTagByName(name, domain){
-        // if(this.mainData.length){
-        //     const domainData = this.mainData[domain];
-        //     const tags = domainData[this.TAGS];
-        //     tags.splice(
-        //         tags.indexOf(name), 
-        //         2
-        //     );
-        // }
-        console.log("TAGSSSS: ",this.TAGS, "DOMAIN :", domain);
         const tags = this.produceTags(domain, this.TAGS);
+        console.log("&&&&&&&&&& DELETED TAG:  ", name, "  and INDEXOF:  ", tags.indexOf(name), "  OLD TAGS: ", tags)
+        const tagStringArray = tags.map(tag => tag.tag);
         tags.splice(
-            tags.indexOf(name), 
-            2
-        );      
+            tagStringArray.indexOf(name), 
+            1//2  ---- 2????
+        );    
+        console.log("&&&&&&&&&& SPLICED TAGS: ", tags)  
         console.log("data before store: ", JSON.stringify(this.mainData))
         this.storeData(this.mainData);  
     }
