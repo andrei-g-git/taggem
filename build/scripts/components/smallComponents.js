@@ -16,9 +16,11 @@ function createTag(content, color, index){
     coloredNudge.setAttribute("id", "tag-nudge-" + index);
     coloredNudge.setAttribute("style", getNudgeStyle(color))
 
-    const deleteButton = document.createElement("div");
+    const deleteButton = document.createElement("img");
     deleteButton.setAttribute("class", "tag-delete");
     deleteButton.setAttribute("id", `tag-delete-${index}`);
+    deleteButton.setAttribute("src", "assets/delete-64.png");
+    deleteButton.setAttribute("alt", "del");
 
     tag.appendChild(coloredNudge);
     tag.appendChild(document.createTextNode(content));

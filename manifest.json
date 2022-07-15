@@ -8,22 +8,17 @@
     "offline_enabled": true,
     "minimum_chrome_version": "88",
     "icons": {
-        "128": "assets/taggem-logo-128.png",
-        "48": "assets/taggem-logo-48.png",
-        "16": "assets/taggem-logo-16.png"
+        "128": "build/assets/taggem-logo-128.png",
+        "48": "build/assets/taggem-logo-48.png",
+        "16": "build/assets/taggem-logo-16.png"
     },
-    "web_accessible_resources": [
-        "assets/taggem-logo-48.png",
-        "assets/ok-128.png",
-        "assets/delete-64.png"
-    ],
-    "browser_action": {
-        "default_icon": "assets/taggem-logo-16.png",
-        "default_popup": "popup.html"
+    "action": {
+        "default_icon": "build/assets/taggem-logo-16.png",
+        "default_popup": "build/popup.html"
     },
-    "options_page": "options.html",
+    "options_page": "build/options.html",
     "background": {  
-        "service_worker": "scripts/tabListener.js"   
+        "service_worker": "build/scripts/tabListener.js"   
     },
     "permissions": [
         "activeTab",

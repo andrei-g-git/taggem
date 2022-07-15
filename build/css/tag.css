@@ -39,17 +39,16 @@
 
 .tag-delete{
   display: none;
-  background-image: url(/assets/delete-64.png);
-  background-repeat: no-repeat;
+  /* background-image: url(/assets/delete-64.png);
+  background-repeat: no-repeat; */
   /* background-position: center; */
-  background-size: contain;
+  /* background-size: contain; */
   height: 0.6rem;
   width: 0.6rem;
   position: absolute;
   top: 0.4rem;
   right: 0.2rem;
-  /* deletr */
-  /* background-color: red; */
+
 }
 
 .tag:hover > .tag-delete{

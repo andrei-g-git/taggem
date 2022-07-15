@@ -19,9 +19,9 @@ document.addEventListener( 'DOMContentLoaded', init );
 function init(){
     console.log("init")
 
-    getDataFromStorage(browser, keys.MAIN)
+    getDataFromStorage(chrome, keys.MAIN)
         .then(data => {
-            if(! data[keys.MAIN]) storeDataToStorage(browser, {WEBSITES: {
+            if(! data[keys.MAIN]) storeDataToStorage(chrome, {WEBSITES: {
                 "en.wikipedia.org": {
                     "TAGS": [
                         {tag: "abc", color: "#000000"},
@@ -186,6 +186,7 @@ function refreshMarks(container, browser, createMarks, createMarkGroup, getDomai
 
 function addTag(form, browser, appendToMainData, getCurrentDomain, mainKey, tagsKey, demarcatorKey, newDemarcatorKey){
     if(form){
+        console.log("added tag")
         form.addEventListener("submit", function(event){
             event.preventDefault();
             const input = this.elements["tag-field"];
