@@ -16,8 +16,13 @@ function createTag(content, color, index){
     coloredNudge.setAttribute("id", "tag-nudge-" + index);
     coloredNudge.setAttribute("style", getNudgeStyle(color))
 
+    const deleteButton = document.createElement("div");
+    deleteButton.setAttribute("class", "tag-delete");
+    deleteButton.setAttribute("id", `tag-delete-${index}`);
+
     tag.appendChild(coloredNudge);
     tag.appendChild(document.createTextNode(content));
+    tag.appendChild(deleteButton);
     return tag;
 }
 

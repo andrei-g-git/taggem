@@ -16,9 +16,6 @@
 
 document.addEventListener( 'DOMContentLoaded', init );
 
-//great, adding state now...
-let refreshes = 0;
-
 function init(){
     console.log("init")
 
@@ -119,55 +116,8 @@ function deleteTagByName(name, domain, mainKey, browser){
     
 }
 
-
-
-// function createAllTags_New(container, browser, createTag, getCurrentDomain, mainKey, tagsKey){
-//     removeAllChildNodesAsync(container)
-//         .then(container => {
-//             browser.storage.local.onChanged.addListener(changes => {
-//                 getCurrentDomain(browser)
-//                     .then(domain => {
-//                         getDomainData(browser, domain, mainKey)
-//                             .then(domainData => {
-//                                 let dataFromDomain = domainData;
-//                                 console.log("changes from new thing" , JSON.stringify(changes))
-//                                 if(changes.WEBSITES/* changes.newValue.length */){
-//                                     const primaryData = changes["WEBSITES"].newValue;
-//                                     dataFromDomain = primaryData[domain];
-//                                     // if(primaryData.WEBSITES){
-//                                     //     dataFromDomain = primaryData["WEBSITES"][domain];
-//                                     // } else {
-//                                     //     dataFromDomain = primaryData[domain]; //well this sucks
-//                                     // }
-//                                 } else {
-//                                     dataFromDomain = changes[domain].newValue
-//                                 }  
-//                                 const tags = dataFromDomain[tagsKey];
-//                                 console.log("tags: ", JSON.stringify(tags));
-//                                 tags.forEach((tagObject, index) => {
-//                                     const tagString = tagObject.tag;
-//                                     const color = tagObject.color;
-//                                     const tagElement = createTag(tagString, color, index);
-//                                     console.log("tagElement " + index + "  ", tagElement);
-//                                     container.appendChild(tagElement);
-//                                     console.log(`container after elem ${index}  added: `, container);
-//                                     ///////
-//                                     tagElement.addEventListener("click", () => deleteTagByName(tagString, domain, mainKey, browser));
-//                                 });                                 
-//                             });                        
-//                     });
-//             });
-//         });
-// }
-
-
-
-
 function createAllTags(container, browser, createTag, getCurrentDomain, mainKey, tagsKey){
     if(container){
-
-        //delete
-        refreshes += 1;
 
         container.innerHTML = "";
         console.log("container FORM createAllTags ++++++: ", container);
@@ -185,14 +135,9 @@ function createAllTags(container, browser, createTag, getCurrentDomain, mainKey,
                             container.appendChild(tagElement);
                             console.log(`container after elem ${index}  added: `, container);
                             ///////
-                            tagElement.addEventListener("click", () => deleteTagByName(tagString, domain, mainKey, browser));
+                            const deleteButton = tagElement.querySelector(`#tag-delete-${index}`);
+                            deleteButton.addEventListener("click", () => deleteTagByName(tagString, domain, mainKey, browser));
                         });
-
-                        setTimeout(() => {
-                            console.log("container after 1 second: ", container);
-                        },
-                            190
-                        )
                     });
             })
     }
@@ -212,7 +157,7 @@ function createMarks(container, browser, createMarkGroup, mainKey, markKey, endM
 }
 
 function refreshTags(container, browser, createAllTags, createTag, getCurrentDomain, mainKey, tagsKey){
-    browser.storage.local.onChanged.addListener(changes => { //so I don't need the results, I have no idea why I wasn't retreiving the right data when using my functions...
+    browser.storage.local.onChanged.addListener(changes => { 
         console.log("CHANGES FROM OLD REFRESH:  ", JSON.stringify(changes))
         createAllTags(
             container,
@@ -224,69 +169,6 @@ function refreshTags(container, browser, createAllTags, createTag, getCurrentDom
         )
     });
 }
-
-// function refreshTagsFromWebistes(container, browser, createTag, tagsKey){
-//     if(container){
-
-//         console.log("container from refreshTags: ", container);
-//         // console.log("from new refresh function, container before innerhtml='':  ", container)
-//         // container.innerHTML = "";
-
-//         // const testE = document.createElement("div");
-//         // testE.setAttribute("class", "PULA")
-//         // container.appendChild(testE);
-
-//         // removeAllChildNodes(container);
-//         // console.log("from new refresh function, container AFTER innerhtml='':  ", container)
-
-//         // let promise = new Promise((resolve, reject) => {
-//         //     resolve(container);
-//         // });
-//         // if(refreshes > 1) promise = removeAllChildNodesAsync(container);
-//         if(1 > 0/* refreshes > 1 */){
-//             removeAllChildNodesAsync(container/* , refreshes */)
-//             // promise
-//                 .then(container => {
-
-            
-//             //delete
-//             refreshes += 1;
-
-//                     console.log("container from removeAllChildNodes: ", container);
-//                     browser.storage.local.onChanged.addListener(changes => {
-//                         console.log("refreshes: ", refreshes, "  CHANGES:  ", JSON.stringify(changes))
-//                         getCurrentDomain(browser)
-//                             .then(domain => {
-//                                 console.log("DOMAIN    ---:", domain)
-//                                 let domainDataChanges = {}
-//                                 if(JSON.stringify(changes).includes("WEBSITES")){
-//                                     domainDataChanges = changes["WEBSITES"][domain]
-//                                 } else {
-//                                     domainDataChanges = changes[domain]
-//                                 }
-//                                 const domainData = domainDataChanges.newValue;
-//                                 console.log("DIMAIN DATA: ----", JSON.stringify(domainData))
-//                                 const tags = domainData[tagsKey];
-//                                 tags.forEach((tagObject, index) => {
-//                                     console.log(`i-${index}:  `,index);
-//                                     const tagString = tagObject.tag;
-//                                     const color = tagObject.color;
-//                                     const tagElement = createTag(tagString, color, index);
-//                                     container.appendChild(tagElement);
-
-//                                     //test
-//                                     tagElement.setAttribute("style", `border-width: 10px;`)
-
-//                                     ///////
-//                                     tagElement.addEventListener("click", () => deleteTagByName(tagString, domain, mainKey, browser));
-//                                 });
-//                             });
-//                     });
-//                 });
-//             }
-
-//     }
-// }
 
 function refreshMarks(container, browser, createMarks, createMarkGroup, getDomainDataAfterDomainCheck, mainKey, markKey, endMarkKey){
     browser.storage.local.onChanged.addListener(changes => {
