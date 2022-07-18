@@ -3,7 +3,7 @@
     "name": "Taggem",
     "short_name": "Taggem",
     "author": "andrei",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Add a multiple tags directly to the URL of websites",
     "offline_enabled": true,
     "minimum_chrome_version": "88",
@@ -12,6 +12,20 @@
         "48": "build/assets/taggem-logo-48.png",
         "16": "build/assets/taggem-logo-16.png"
     },
+    "web_accessible_resources": [{
+        "resources": [
+            "assets/ok-128.png",
+            "assets/delete-64.png"            
+        ],
+        "matches": [
+            "<all_urls>"
+        ],
+        "extension_ids": [
+            "aweawef", "awefaewfaewfawe"
+        ]
+    }
+
+    ],
     "action": {
         "default_icon": "build/assets/taggem-logo-16.png",
         "default_popup": "build/popup.html"

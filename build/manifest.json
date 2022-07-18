@@ -1,7 +1,7 @@
 {
     "manifest_version": 2, 
     "name": "Taggem",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Add a multiple tags directly to the URL of websites",
     "icons": {
         "128": "assets/taggem-logo-128.png",
@@ -9,7 +9,6 @@
         "16": "assets/taggem-logo-16.png"
     },
     "web_accessible_resources": [
-        "assets/taggem-logo-48.png",
         "assets/ok-128.png",
         "assets/delete-64.png"
     ],
