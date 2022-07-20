@@ -28,8 +28,8 @@ function init(){
                         {tag: "def", color: "000000"},
                         {tag: "ghi", color: "000000"}
                     ],
-                    "MARK": "Page",
-                    "END_MARK": "DIIIICK"
+                    "MARK": "Something",
+                    "END_MARK": "Something else"
                 }
             }});
         });
@@ -150,8 +150,8 @@ function createMarks(container, browser, createMarkGroup, mainKey, markKey, endM
             .then(domainData => {
                 const mark = domainData[markKey];
                 const endMark = domainData[endMarkKey];
-                container.appendChild(createMarkGroup(mark, mark.length));
-                container.appendChild(createMarkGroup(endMark, endMark.length));
+                container.appendChild(createMarkGroup(mark, true/* mark.length */));
+                container.appendChild(createMarkGroup(endMark, false/* endMark.length */));
             });
     }
 }
